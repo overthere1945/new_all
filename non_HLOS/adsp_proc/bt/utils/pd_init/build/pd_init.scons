@@ -1,0 +1,62 @@
+#===============================================================================
+#
+# BT AU
+#
+# GENERAL DESCRIPTION
+#    Build script
+#
+# Copyright (c) 2025 by Qualcomm Technologies, Incorporated.
+# All Rights Reserved.
+# QUALCOMM Proprietary/GTDR
+#
+#===============================================================================
+Import('env')
+env = env.Clone()
+import json
+import subprocess
+import os, inspect
+import platform
+
+env.RequirePublicApi(['DEBUGTOOLS', 'KERNEL'], area='core')
+
+#-------------------------------------------------------------------------------
+# Setup source PATH
+#-------------------------------------------------------------------------------
+
+if 'USES_PD_MON_ATTR_API' in env:
+  env.Append(CPPDEFINES = ['PD_MON_ATTR_API'])
+
+if 'USES_BUILD_BT_DYNAMIC' in env:
+  env.Append(CPPDEFINES = ['DYNAMIC_BT_PD'])
+
+if 'USES_BUILD_BT_DYNAMIC_DT' in env:
+  env.Append(CPPDEFINES = ['DYNAMIC_BT_PD_DT'])
+
+env.VariantDir('${BUILDPATH}', '..', duplicate=0)
+
+BT_ROOT_PD_SRC = os.path.join('${BUILDPATH}', 'src', 'pd_bt_init.c')
+BT_ROOT_PD_LIB = os.path.join('${BUILDPATH}', 'pd_bt_init')
+
+env.PrintInfo("debug_vb\n" + BT_ROOT_PD_SRC + "\n" + BT_ROOT_PD_LIB)
+
+env.AddBinaryLibrary(['CORE_ADSP_ROOT','CORE_QDSP6_SW','CORE_ADSP_ROOT'], BT_ROOT_PD_LIB, BT_ROOT_PD_SRC)
+
+if 'USES_RCINIT' in env:
+
+  if env.get('BT_IMG_NAME'):
+    env.Append(CPPDEFINES="BT_IMG_NAME=\\\"bt_process\\\"")
+  else:
+    env.Append(CPPDEFINES="BT_IMG_NAME=\\\"M${BUILD_ASIC}${BUILD_ID}${BUILD_VER}_BT.pbn\\\"")
+
+  RCINIT_IMG = ['CORE_QDSP6_SW','QDSP6_SW_IMAGE','CORE_ADSP_ROOT']
+  if (env.get('IMAGE','adsp') == 'adsp'): 
+    env.Append(CPPDEFINES="SPAWN_BT_USERPD")
+    env.AddRCInitFunc(
+       RCINIT_IMG,
+       {
+          'sequence_group'             : 'RCINIT_GROUP_7',
+          'init_name'                  : 'pd_bt',
+          'init_function'              : 'pd_mon_bt_init',
+       }) 
+
+env.LoadSoftwareUnits()

@@ -1,0 +1,420 @@
+#===============================================================================
+# Copyright (c) 2025-2026 Qualcomm Technologies, Inc.
+# All Rights Reserved.
+# Confidential and Proprietary - Qualcomm Technologies, Inc.
+
+# $QTI_LICENSE_SH$
+#===============================================================================
+# BT Host Libs
+#===============================================================================
+
+Import('env')
+env.LoadSoftwareUnits()
+env = env.Clone()
+
+
+if env['CHIPSET'] in ['atherton']:
+    SRCPATH = '${BUILD_ROOT}/qsh/qsh_ss/microstack'
+    BUILDTAG = 'CORE_SSC_ADSP_USER'
+    Transport = 'IPC'
+    env.Append(CFLAGS = ' -DUART_BUILD_V1')    
+elif env['CHIPSET'] in ['balsam']:
+    SRCPATH = '${BUILD_ROOT}/bt/microstack'
+    BUILDTAG = 'BT_ADSP_USER'
+    Transport = 'I3C'
+else:
+    SRCPATH = '${BUILD_ROOT}/bt/microstack'
+    BUILDTAG = 'BT_ADSP_USER'
+    Transport = 'UART'
+
+
+env.VariantDir('${BUILDPATH}', SRCPATH, duplicate=0)
+
+#-------------------------------------------------------------------------------
+# Internal depends within free rtos
+#-------------------------------------------------------------------------------
+core_public_apis = [
+       'KERNEL',
+       'SERVICES',
+       'POWER',
+       'DAL',
+       'BUSES',
+       'DEBUGTOOLS',
+       'SYSTEMDRIVERS',
+       'PRODUCTS',
+       'DIAG',
+       'DEBUGTRACE',
+       'MPROC',
+]
+
+platform_public_apis = [
+       'PLATFORM_LIBS',
+       'MOD_TABLE',
+       'QAIC',
+       'STDDEF',
+       'REMOTE',
+       'HAPSDK',
+]
+
+env.RequirePublicApi(core_public_apis, area='core')
+env.RequirePublicApi(platform_public_apis, area='platform')
+
+env.RequirePublicApi(['MICRO_STACK_API'])
+env.RequirePublicApi(['MICRO_STACK_INT'])
+if Transport == 'I3C':
+    if env.PathExists('${BUILD_ROOT}/qsh_drivers/qsh_ble/bt/build'):
+        env.RequirePublicApi(['QSH_BLE_BT_PUBLIC_APIS'])
+
+#-------------------------------------------------------------------------------
+# Compilation flags
+#-------------------------------------------------------------------------------
+if Transport == 'UART':
+    env.Append(CFLAGS = ' -DSYN_BT_HOST_TRANSPORT=2')
+elif Transport == 'I3C':
+    env.Append(CFLAGS = ' -DSYN_BT_HOST_TRANSPORT=3')
+else:
+    env.Append(CFLAGS = ' -DSYN_BT_HOST_TRANSPORT=1')
+#env.Append(CFLAGS = ' -DSYN_IPC_UNIT_TEST')
+
+
+## =================================================================== ##
+##                          FRAMEWORK FILES                            ##
+## =================================================================== ##
+FRW_SRC = [
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk.c',
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_debug.c',
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_duplicate.c',
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_pmalloc.c',
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_pmalloc_data_create_meta.c',
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_pmalloc_create_meta.c',     
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_read_head.c', 
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_read_head16.c', 
+     '${BUILDPATH}/frw/gsp/src/utils/mblk/csr_mblk_read_head8.c',
+     '${BUILDPATH}/frw/gsp/src/utils/message_queue/csr_message_queue.c',
+     '${BUILDPATH}/frw/gsp/src/utils/queue_lib/csr_queue_lib.c',
+     '${BUILDPATH}/frw/gsp/src/utils/unicode/csr_utf16.c',
+     '${BUILDPATH}/frw/gsp/src/utils/list/csr_list.c',
+     
+     '${BUILDPATH}/frw/gsp/src/random/csr_random.c',
+
+     '${BUILDPATH}/frw/gsp/src/sched/csr_sched.c',
+
+     '${BUILDPATH}/frw/bsp/ports/qurt/src/framework_ext/csr_framework_ext.c',
+     '${BUILDPATH}/frw/bsp/ports/qurt/src/panic/csr_panic.c',
+     '${BUILDPATH}/frw/bsp/ports/qurt/src/pmem/csr_pmem.c',
+     '${BUILDPATH}/frw/bsp/ports/qurt/src/time/csr_time.c',
+     '${BUILDPATH}/frw/bsp/ports/qurt/src/util/csr_util.c',
+     '${BUILDPATH}/frw/bsp/ports/qurt/src/log/syn_qurt_log.c',
+
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_lib.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_free_up.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_free_down.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_handler.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_private_free_down.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_private_free_up.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_sef.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_util.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/hci/csr_hci_peri_util.c',
+
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_free_down.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_free_up.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_handler.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_lib.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_private_free_down.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_private_free_up.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_private_lib.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_sef.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_bluecore_transport.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_qc_sef.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_qc_hcivs_lib.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/tm/csr_tm_qc_hcivs_util.c',
+
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_download.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_event_sef.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_free_down.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_handler.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_private_free_down.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_private_free_up.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_sef.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_send_up.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_util.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_free_up.c',
+     '${BUILDPATH}/frw/gsp/src/qualcomm/qvsc/csr_qvsc_lib.c',
+]
+
+## =================================================================== ##
+##                          LIB FILES                                  ##
+## =================================================================== ##
+LIB_SRC = [
+     '${BUILDPATH}/bt/core_stack/lib/common/bd_addr_copy.c',
+     '${BUILDPATH}/bt/core_stack/lib/common/bd_addr_eq.c',
+     '${BUILDPATH}/bt/core_stack/lib/common/bd_addr_zero.c',
+     '${BUILDPATH}/bt/core_stack/lib/common/common.c', 
+     
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_access_rsp.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_add_db_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_add_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_remove_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_connect_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_disconnect_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_execute_write_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_find_by_type_value_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_find_info_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_free.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_handle_value_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_handle_value_rsp.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_prepare_write_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_blob_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_by_group_type_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_by_type_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_multi_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_register_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_write_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_connect_rsp.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_handle_value_ntf.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_multi_handle_value_ntf_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_multi_var_req.c',
+     '${BUILDPATH}/bt/core_stack/lib/attlib/attlib_read_multi_var_rsp.c',
+
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_datareadrsp.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_datawritereqex.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_disconnectctxreq.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_disconnectreq.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_disconnectrsp.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_freeprimitive.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_datawriteabortreq.c',
+     '${BUILDPATH}/bt/core_stack/lib/l2caplib/l2caplib_addcreditreq.c',
+
+     '${BUILDPATH}/bt/core_stack/lib/rfcommlib/rfcommlib.c',
+]
+
+## =================================================================== ##
+##                          BLUESTACK FILES                            ##
+## =================================================================== ##
+BS_SRC = [
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_auto.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_hcicmd_array.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_hcicmd_id_pdufmt.c',
+#   '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_hcicmd_sef.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_hcievt_array.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_hcievt_cmd_cmplt.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_hcievt_id_pdufmt.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_pdufmt_read.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_pdufmt_sizeof.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_pdufmt_write.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_pdufmts.c',
+    '${BUILDPATH}/bt/hci/converter/csr_bt_hci_convert_pdufmts_array.c',
+    '${BUILDPATH}/bt/hci/hci_shim/csr_bt_hcishim.c',
+    '${BUILDPATH}/bt/hci/hci_shim/csr_bt_hcisizelut.c',
+]
+
+ATT_SRC = [
+    '${BUILDPATH}/bt/core_stack/att/att.c',
+    '${BUILDPATH}/bt/core_stack/att/att_client.c',
+    '${BUILDPATH}/bt/core_stack/att/att_db.c',
+    '${BUILDPATH}/bt/core_stack/att/att_eatt.c',
+    '${BUILDPATH}/bt/core_stack/att/att_hostdb.c',
+    '${BUILDPATH}/bt/core_stack/att/att_interface.c',
+    '${BUILDPATH}/bt/core_stack/att/att_l2cap.c',
+    '${BUILDPATH}/bt/core_stack/att/att_server.c',
+    '${BUILDPATH}/bt/core_stack/att/att_upstream.c',
+]
+
+L2CAP_SRC = [
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_acl_reassembly.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_chme.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_cid_common.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_cid_dynamic.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_cidme.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_con_handle.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_control.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_flow.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_interface.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_main.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_sig_handle.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_signal.c',
+]
+
+RFCOMM_SRC = [
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_connection_manager.c',
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_control.c',
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_frame.c',
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_host_handler.c',
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_interface.c',
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_l2cap_handler.c',
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_main.c',
+]
+
+DM_SRC = [
+    '${BUILDPATH}/bt/core_stack/dm/dm_acl.c',
+    '${BUILDPATH}/bt/core_stack/dm/dm_acl_credits.c',
+    '${BUILDPATH}/bt/core_stack/dm/dm_hci_interface.c',
+	'${BUILDPATH}/bt/core_stack/dm/dm_deinit.c',
+]
+
+
+## =================================================================== ##
+##                           BT FILES                                  ##
+## =================================================================== ##
+COMMON_SRC = [
+    '${BUILDPATH}/bt/common/qbl_adapter/qbl_adapter_timer.c',
+
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_copy.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_copy_from_bd_addr.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_copy_from_public_bd_addr.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_copy_to_bd_addr.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_eq.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_eq_bd_addr.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_is_private_nonresolvable.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_is_private_resolvable.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_is_static.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tbdaddr_is_valid.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tpbdaddr_copy_from_bd_addr.c',
+    '${BUILDPATH}/bt/common/tbdaddr/tpbdaddr_eq.c',
+
+    '${BUILDPATH}/bt/common/code/csr_bt_cmn_linked_list.c',
+    '${BUILDPATH}/bt/common/code/csr_bt_core_stack_log.c',
+    '${BUILDPATH}/bt/common/code/csr_bt_mblk_helpers.c',
+    '${BUILDPATH}/bt/common/code/csr_bt_util.c',
+    '${BUILDPATH}/bt/common/code/csr_bt_util_packer.c',
+    '${BUILDPATH}/bt/common/code/csr_bt_uuids.c',
+    '${BUILDPATH}/bt/common/code/csr_bt_free_up.c',
+
+    '${BUILDPATH}/bt/common/pmalloc/csr_bt_pdestroy.c',
+    '${BUILDPATH}/bt/common/pmalloc/csr_bt_prealloc.c',
+
+    '${BUILDPATH}/bt/common/longtimer/get_deci_time.c',
+    '${BUILDPATH}/bt/common/longtimer/get_milli_time.c',
+    '${BUILDPATH}/bt/common/longtimer/get_second_time.c',
+    '${BUILDPATH}/bt/common/longtimer/longtimer.c',
+    
+    '${BUILDPATH}/bt/common/optimtest/udiv6416.c',
+    '${BUILDPATH}/bt/common/optimtest/udiv3216.c',
+    '${BUILDPATH}/bt/common/optimtest/umult2424.c',
+
+    '${BUILDPATH}/product/bt_main.c',
+    '${BUILDPATH}/product/bt_utils.c',
+    '${BUILDPATH}/product/bt_app_cb.c',
+    '${BUILDPATH}/product/bt_patch_nvm.c',
+]
+
+
+BMM_SRC = [
+    '${BUILDPATH}/bt/microstack_mgr/bmm_main.c',
+    '${BUILDPATH}/bt/microstack_mgr/bmm_lib.c',
+    '${BUILDPATH}/bt/microstack_mgr/bmm.c',
+    '${BUILDPATH}/bt/microstack_mgr/bmm_upstream.c',
+    '${BUILDPATH}/bt/microstack_mgr/bmm_utils.c',
+    '${BUILDPATH}/bt/microstack_mgr/bmm_data.c',
+    '${BUILDPATH}/bt/microstack_mgr/bmm_btoff_event.c',
+]
+
+
+GATT_SRC = [
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_main.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_lib.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_free_handcoded.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_free_down.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_db_utils.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_free_hc_impl.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_private_free_down.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_private_free_up.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_sef.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_att_sef.c',     
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_upstream.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_utils.c',
+    '${BUILDPATH}/bt/core_stack/gatt/csr_bt_gatt_free_up.c',
+]
+
+ADV_SCAN_SRC = [
+    '${BUILDPATH}/bt/core_stack/adv_scan/adv_scan_mgt_interface.c',
+    '${BUILDPATH}/bt/core_stack/adv_scan/ext_adv_manager.c',
+    '${BUILDPATH}/bt/core_stack/adv_scan/ms_extended_adv_response.c',
+    '${BUILDPATH}/bt/core_stack/lib/advScanlib/ms_ext_adv_lib.c',
+    '${BUILDPATH}/bt/core_stack/lib/advScanlib/ms_ext_scan_lib.c',
+    '${BUILDPATH}/bt/core_stack/adv_scan/ms_extended_adv_response.c',
+    '${BUILDPATH}/bt/core_stack/adv_scan/ext_scan_manager.c',
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_ble_scan_arb.c',
+]
+
+HCI_ARBITER_SRC = [
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_arbiter_lib.c',
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_arbiter.c',
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_arbiter_rx_data.c',
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_cmd_arb_mgt_interface.c',
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_arbiter_event.c',
+    '${BUILDPATH}/bt/hci/hci_arbiter/hci_att_arb_mgt_interface.c',
+]
+
+OFFLOAD_SRC = [
+    '${BUILDPATH}/bt/core_stack/att/att_offload.c',
+    '${BUILDPATH}/bt/core_stack/gatt/gatt_offload.c',    
+    '${BUILDPATH}/bt/core_stack/rfcomm/rfcomm_offload.c',
+    '${BUILDPATH}/bt/core_stack/l2cap/l2cap_offload.c',
+]
+
+TEST_SRC = [
+#    '${BUILDPATH}/test/bmm_test.c',
+]
+
+IPC_SRC = [
+     '${BUILDPATH}/frw/gsp/src/bluecore/transport/ipc/syn_ipc.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/transport/ipc/syn_ipc_drv.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/transport/ipc/syn_ipc_drv_test.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/transport/ipc/syn_ipc_mem.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/transport/ipc/syn_ipc_rx.c',
+     '${BUILDPATH}/frw/gsp/src/bluecore/transport/ipc/syn_ipc_tx.c',
+]
+
+
+## =================================================================== ##
+##                          UART FILES                                 ##
+## =================================================================== ##
+UART_SRC = [
+    '${BUILDPATH}/frw/bsp/ports/qurt/src/lowlevel/uart/csr_serial_com.c',
+    '${BUILDPATH}/frw/gsp/src/bluecore/transport/h4/csr_h4_rx.c',
+    '${BUILDPATH}/frw/gsp/src/bluecore/transport/h4/csr_h4.c',
+    '${BUILDPATH}/frw/gsp/src/bluecore/transport/h4/csr_h4_tx.c',
+    '${BUILDPATH}/frw/gsp/src/bluecore/transport/h4/ibs/csr_h4_ibs.c',
+]
+
+## =================================================================== ##
+##                          I3C FILES                                  ##
+## =================================================================== ##
+I3C_SRC = [
+    '${BUILDPATH}/frw/gsp/src/bluecore/transport/i3c/syn_i3c.c',
+    '${BUILDPATH}/frw/gsp/src/bluecore/transport/i3c/syn_i3c_tx.c',
+]
+
+
+MICRO_STACK_SRC = LIB_SRC+FRW_SRC+BS_SRC+COMMON_SRC+RFCOMM_SRC+L2CAP_SRC+DM_SRC+ATT_SRC+GATT_SRC+BMM_SRC+HCI_ARBITER_SRC+OFFLOAD_SRC+ADV_SCAN_SRC+TEST_SRC
+
+if Transport == 'UART':
+    MICRO_STACK_SRC += UART_SRC
+elif Transport == 'I3C':
+    MICRO_STACK_SRC += I3C_SRC
+else :
+    MICRO_STACK_SRC += IPC_SRC
+        
+microstack_lib = env.AddLibrary(BUILDTAG, '${BUILDPATH}/micro_stack', MICRO_STACK_SRC)
+
+if 'BT_ADSP_USER' in BUILDTAG and 'USES_MEMSEG' in env:
+    env.TagLibraryForMemorySegment(BUILDTAG, 'bt', microstack_lib)
+
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_arbiter', HCI_ARBITER_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_off', OFFLOAD_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_lib', LIB_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_frw', FRW_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_bs', BS_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_common', COMMON_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_rfcomm', RFCOMM_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_l2cap', L2CAP_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_dm', DM_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_att', ATT_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_gatt', GATT_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_bmm', BMM_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_test', TEST_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_adv_scan', ADV_SCAN_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_uart', UART_SRC)
+#env.AddLibrary(BUILDTAG, '${BUILDPATH}/microstack_ipc', IPC_SRC)

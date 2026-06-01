@@ -1,0 +1,61 @@
+# ------------------------------------------------------------------------------
+#  Copyright (c) Qualcomm Technologies, Inc.
+#  All rights reserved.
+#  Confidential and Proprietary - Qualcomm Technologies, Inc.
+# ------------------------------------------------------------------------------
+
+config LPAI_BTSW_ENABLE
+    bool "Enable Bluetooth on AWM"
+    default n
+    help
+        This enables bluetooth related functionality on M55.
+
+
+config LPAI_BTSW_BTTEST_ENABLE
+    bool "Enable BT Test Functionality"
+    default n
+    depends on SHELL
+    help
+        This enables the BT Test functionality and related source files
+
+config LPAI_BT_TEST_MENU
+    bool "Enable BT Test Menu on the Shell"
+    default n
+    depends on LPAI_BTSW_BTTEST_ENABLE
+    help
+        This enables the BT Test Menu on the Shell
+
+
+config LPAI_BTSW_ENABLE_ISLAND_TEST
+    bool "Enable Forced Island Entry/Exit"
+    default n
+    help
+        This flag helps enablement of Dev Testing for Island on ADSP
+
+
+choice LPAI_BTSW_GATT_OFFLOAD_MODE
+    prompt "GATT Offload variant"
+    optional
+    help
+      Select the offload variant to enable. You may also select none.
+
+config LPAI_BTSW_ENABLE_GATT_OFFLOAD
+    bool "GATT Offload Variant Using Legacy Headers and APIS"
+
+config LPAI_BTSW_ENABLE_GATT_OFFLOAD_GHEADER
+    bool "GATT Offload Variant Using Google Headers"
+endchoice
+
+
+	
+config LPAI_BT_GATT_THROUGHPUT_MENU
+    bool "Enable BT Test Throughput Menu"
+    depends on LPAI_BTSW_ENABLE_GATT_OFFLOAD_GHEADER
+    default n
+    help
+        This enables the BT Test Throughput Menu	
+
+orsource "../*/config/Kconfig"
+
+
+

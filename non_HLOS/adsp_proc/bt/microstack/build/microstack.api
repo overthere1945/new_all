@@ -1,0 +1,53 @@
+#===============================================================================
+# Copyright (c) 2025 Qualcomm Technologies, Inc.
+# All Rights Reserved.
+# Confidential and Proprietary - Qualcomm Technologies, Inc.
+
+# $QTI_LICENSE_SH$
+#===============================================================================
+# Micro Stack APIs
+#===============================================================================
+
+Import('env')
+env.LoadAPIUnits()
+
+if env['CHIPSET'] in ['atherton']:    
+    env.Replace(MICRO_STACK_ROOT = '${INC_ROOT}/qsh/qsh_ss/microstack')
+else:
+    env.Replace(MICRO_STACK_ROOT = '${INC_ROOT}/bt/microstack')
+
+env.PublishPublicApi('MICRO_STACK_API', [
+  '${MICRO_STACK_ROOT}/product',
+  '${MICRO_STACK_ROOT}/product/inc',
+  '${MICRO_STACK_ROOT}/product/config',
+  '${MICRO_STACK_ROOT}/frw/bsp/ports/qurt/inc',
+  '${MICRO_STACK_ROOT}/frw/bsp/ports/qurt/inc/platform',
+  '${MICRO_STACK_ROOT}/frw/gsp/inc',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/inc',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/sched',
+  '${MICRO_STACK_ROOT}/frw/bsp/inc',
+  '${MICRO_STACK_ROOT}/bt/inc',
+  '${MICRO_STACK_ROOT}/bt/common/qbl_adapter/interface',
+  '${MICRO_STACK_ROOT}/bt/hci/inc',
+  '${MICRO_STACK_ROOT}/bt/core_stack/rfcomm',
+  '${MICRO_STACK_ROOT}/bt/core_stack/l2cap',
+  '${MICRO_STACK_ROOT}/bt/core_stack/dm',
+  '${MICRO_STACK_ROOT}/bt/core_stack/att',
+  '${MICRO_STACK_ROOT}/bt/core_stack/gatt',
+  '${MICRO_STACK_ROOT}/bt/microstack_mgr',
+  '${MICRO_STACK_ROOT}/bt/hci/hci_arbiter',
+  '${MICRO_STACK_ROOT}/bt/core_stack/inc',
+  '${MICRO_STACK_ROOT}/bt/core_stack/adv_scan',
+  '${MICRO_STACK_ROOT}/bt/common/longtimer',
+  '${MICRO_STACK_ROOT}/bt/core_stack/lib/l2caplib',  
+  '${MICRO_STACK_ROOT}/frw/gsp/src/bluecore/inc/tm',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/bluecore/hci',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/bluecore/inc/hci',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/bluecore/transport/ipc',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/bluecore/transport/h4',
+  '${MICRO_STACK_ROOT}/frw/gsp/src/bluecore/transport/h4/inc',
+])
+
+env.PublishPublicApi('MICRO_STACK_INT', [
+])
+

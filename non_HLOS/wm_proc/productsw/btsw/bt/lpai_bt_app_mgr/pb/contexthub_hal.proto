@@ -1,0 +1,135 @@
+/*
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear.
+ */
+// This defines protocol between Atherton Context Hub HAL and Q6/M55
+// Atherton calls into this via Glink
+
+syntax = "proto2";
+
+package google.contexthub.proto;
+
+message EndpointId {
+    required uint64 hubID = 1; 
+	required uint64 endpointID = 2;
+}
+
+enum EndpointType {
+	FRAMEWORK = 1;
+	APP = 2;
+	NATIVE = 3;
+	NANOAPP = 4;
+	GENERIC = 5;
+}
+
+enum RpcFormat {
+	CUSTOM = 0;
+	AIDL = 1;
+	PW_RPC_PROTOBUF = 2;
+}
+
+message Service {
+	required RpcFormat format = 1;
+	required bytes serviceDescriptor = 2;
+	required int32 majorVersion = 3;
+	required int32 minorVersion = 4;
+}
+
+message EndpointDetails {
+	required EndpointId endpointId = 1;
+	required EndpointType type = 2;
+	required bytes name = 3;
+	required int32 version = 4;
+	optional bytes tag = 5;
+	optional bytes requiredPermissions = 6;
+	required Service services = 8;
+}
+
+message EndpointDiscoveyRsp {
+	required uint32 num_endpoints = 1;
+	repeated EndpointDetails endpoints = 2;
+}
+
+message OpenEndpointSession {
+	required EndpointId initiator = 1;
+	required EndpointId destination = 2;
+	required int32 sessionId = 3;
+	optional bytes serviceDescriptor = 4;
+}
+
+message OpenEndpointSessionCompleteCb {
+	required int32 sessionId = 1;
+}
+
+enum Reason {
+	UNSPECIFIED = 0;
+	OUT_OF_MEMORY = 1;
+	TIMEOUT = 2;
+	OPEN_ENDPOINT_SESSION_REQUEST_REJECTED = 3;
+	CLOSE_ENDPOINT_SESSION_REQUESTED = 4;
+	ENDPOINT_INVALID = 5;
+	ENDPOINT_GONE = 6;
+	ENDPOINT_CRASHED = 7;
+	HUB_RESET = 8;
+}
+
+message CloseEndpointSession {
+	required int32 sessionId = 1;
+	required Reason reason = 2;
+}
+
+message CloseEndpointSessionCb {
+	required int32 sessionId = 1;
+	required Reason reason = 2;
+}
+
+enum ErrorCode {
+	OK = 0;
+	TRANSIENT_ERROR = 1;
+	PERMANENT_ERROR = 2;
+	PERMISSION_DENIED = 3;
+	DESTINATION_NOT_FOUND = 4;
+}
+
+message SendEndpointMessage {
+	required int32 sessionId = 1;
+	required int32 flags = 2;
+	required int32 sequenceNumber = 3;
+	required int32 permissionsLen = 4;
+	optional bytes permissions = 5;
+	required int32 type = 6;
+	required int32 contentLen = 7;
+	optional bytes content = 8;
+}
+
+message MessageReceivedCb {
+	required int32 sessionId = 1;
+	required int32 flags = 2;
+	required int32 sequenceNumber = 3;
+	required int32 permissionsLen = 4;
+	optional bytes permissions = 5;
+	required int32 type = 6;
+	required int32 contentLen = 7;
+	optional bytes content = 8;
+}
+
+message SendMessageDeliveryStatus {
+	required int32 sessionId = 1;
+	required int32 messageSequenceNumber = 2;
+	required ErrorCode errorCode = 3;
+}
+
+message  MessageDeliveryStatusReceivedCb {
+	required int32 sessionId = 1;
+	required int32 messageSequenceNumber = 2;
+	required ErrorCode errorCode = 3;
+}
+
+message endpointStarted {
+	repeated EndpointId endpoints = 1;
+}
+
+message endpointStopped {
+	repeated EndpointId endpoints = 1;
+	required Reason reason = 2;
+}

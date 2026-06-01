@@ -1,0 +1,10 @@
+# ------------------------------------------------------------------------------
+#  Copyright (c) Qualcomm Technologies, Inc.
+#  All rights reserved.
+#  Confidential and Proprietary - Qualcomm Technologies, Inc.
+# ------------------------------------------------------------------------------
+
+name: btsw
+build:
+  cmake: zephyr
+  kconfig: config/Kconfig

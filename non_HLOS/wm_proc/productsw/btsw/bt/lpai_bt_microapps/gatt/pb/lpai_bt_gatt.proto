@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear.
+ */
+// This defines protocol between Offload Framework on Q6 and GTT micro apps on AM.
+// Q6 calls into this via Glink
+
+syntax = "proto2";
+
+/** Status to be used in response for offload messages */
+enum GattStatus {
+    OFFLOAD_STATUS_SUCCESS = 0;
+    OFFLOAD_STATUS_INVALID_ENDPOINT = 1;
+	OFFLOAD_STATUS_UNSUPPORTED_ROLE = 2;
+	OFFLOAD_STATUS_INSUFF_RESOURCES = 3;
+	OFFLOAD_STATUS_INTERNAL_ERROR = 4;
+};
+
+/** GATT role for the GATT connection*/
+enum GattRole {
+	SERVER = 0;
+	CLIENT = 1;
+}
+
+/** UUID structure */
+message Uuid {
+    required bytes uuid = 1;
+}
+
+/** GATT Charactestic */
+message GattCharacteristic {
+    required Uuid uuid = 1;
+    required int32 properties = 2;
+    required int32 valueHandle = 3;
+}
+
+/** EndpointId */
+message EndpointId {
+    required uint64 hubID = 1;
+    required uint64 endpointID = 2; 
+}
+
+/** API to send register GATT service request to gatt uapp */
+message gatt_register_service {
+   required int32 sessionId = 1;
+   required int32 aclConnectionHandle = 2;
+   required int32 attMtu = 3;
+   required GattRole role = 4;
+   required Uuid uuid = 5;
+   repeated GattCharacteristic gattCharacteristic = 6;
+   required EndpointId endpointId = 7;
+}
