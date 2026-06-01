@@ -1,0 +1,24 @@
+cc_test {
+    name: "VtsHalBluetoothRangingTest",
+    defaults: [
+        "VtsHalTargetTestDefaults",
+        "use_libaidlvintf_gtest_helper_static",
+    ],
+    srcs: ["VtsHalBluetoothRangingTest.cpp"],
+    shared_libs: [
+        "android.hardware.bluetooth.ranging-V2-ndk",
+        "libbase",
+        "libbinder_ndk",
+        "libcutils",
+        "liblog",
+        "libutils",
+    ],
+    static_libs: [
+        "VtsHalHidlTargetTestBase",
+    ],
+    test_config: "VtsHalBluetoothRangingTest.xml",
+    test_suites: [
+        "general-tests",
+        "vts",
+    ],
+}

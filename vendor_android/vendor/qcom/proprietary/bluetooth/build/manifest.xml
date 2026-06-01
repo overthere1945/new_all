@@ -1,0 +1,10 @@
+<config>
+  <image_tree>
+    <name>BTFM.WEAR.1.0.r1</name>
+    <build_id>BTFM.WEAR.1.0.r1-04600-SW6100.0-1</build_id>
+    <branch_point_revision></branch_point_revision>
+    <revision>04600</revision>
+    <spin>1</spin>
+    <client>SW6100.0</client>
+  </image_tree>
+</config>

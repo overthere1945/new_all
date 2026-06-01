@@ -1,0 +1,6 @@
+cc_binary {
+    name: "socketClient",
+    srcs: [
+        "socketClient.c",
+    ],
+}

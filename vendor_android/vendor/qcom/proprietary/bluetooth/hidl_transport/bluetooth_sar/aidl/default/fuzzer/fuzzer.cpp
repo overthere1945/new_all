@@ -1,0 +1,30 @@
+/*==============================================================================
+*  Copyright (c) 2024 Qualcomm Technologies, Inc.
+*  All Rights Reserved.
+*  Confidential and Proprietary - Qualcomm Technologies, Inc.
+*===============================================================================
+*/
+#include <android/binder_auto_utils.h>
+#include "bluetooth_sar/aidl/default/BluetoothSar.h"
+
+#include <fuzzbinder/libbinder_ndk_driver.h>
+#include <fuzzer/FuzzedDataProvider.h>
+#include <log/log.h>
+
+using aidl::vendor::qti::hardware::bluetooth_sar::BluetoothSar;
+
+std::shared_ptr<BluetoothSar> service;
+
+extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
+    service = ndk::SharedRefBase::make<BluetoothSar>();
+    return 0;
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+    if( size < 15 || service == nullptr ) return 0;
+
+    FuzzedDataProvider provider(data, size);
+    android::fuzzService(service->asBinder().get(),std::move(provider));
+
+    return 0;
+}

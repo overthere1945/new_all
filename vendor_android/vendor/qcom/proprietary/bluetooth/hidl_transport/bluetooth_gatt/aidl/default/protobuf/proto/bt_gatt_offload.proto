@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * All rights reserved.
+ * Confidential and Proprietary - Qualcomm Technologies, Inc.
+ */
+// This defines protocol between AthertonQ6 and Bt GattHAL
+// Atherton calls into this via Glink
+
+syntax = "proto2";
+
+package gatt.offload.proto;
+
+enum Role {
+    SERVER = 0;
+    CLIENT = 1;
+}
+enum GattError {
+    UNKNOWN = 0;
+    DATABASE_OUT_OF_SYNC = 1;
+    RESPONSE_TIMEOUT = 2;
+    PROTOCOL_VIOLATION = 3;
+}
+enum GattStatus{
+    SUCCESS = 0;
+    INVALID_ENDPOINT_ID = 1;
+    UNSUPPORTED_ROLE = 2;
+    INSUFFICIENT_RESOURCES = 3;
+    INTERNAL_ERROR = 4;
+}
+message Uuid {
+    required bytes uuid = 1;
+}
+message GattCharacteristic {
+    required Uuid uuid = 1;
+    required int32 properties = 2;
+    required int32 valueHandle = 3;
+}
+message EndpointId {
+    required uint64 hubID = 1; //0 for Q6-LPASS
+    required uint64 endpointID = 2; // Hardcoded, 0-server, 1-client , for all profiles rfcomm/gat/lecoc
+}
+message GattCapabilities {
+    required int32 suppGattClientProperties = 1;
+    required int32 suppGattServerProperties = 2;
+}
+/* API to offload the GATT service to the endpoint for GATT client or server. */
+message gatt_register_service {
+   required int32 sessionId = 1;
+   required int32 aclConnectionHandle = 2;
+   required int32 attMtu = 3;
+   required Role role = 4;
+   required Uuid uuid = 5;
+   repeated GattCharacteristic gattCharacteristic = 6;
+   required EndpointId endpointId = 7;
+}
+/* API to unoffload the GATT service to the endpoint for GATT client or server. */
+message gatt_unregister_service {
+    required int32 sessionId = 1;
+}
+/* API to clear offloaded service either in client role or server role. */
+message gatt_clear_services {
+    required int32 aclConnectionHandle = 1;
+}
+/* Invoked when IBluetoothGatt.registerService() has been completed */
+message gatt_register_service_complete {
+    required int32 sessionId = 1;
+    required GattStatus status = 2;
+}
+/* Invoked when IBluetoothGatt.unRegisterService() has been completed */
+message gatt_unregister_service_complete {
+    required int32 sessionId = 1;
+}
+/* Invoked when IBluetoothGatt.clearServices() has been completed */
+message gatt_clear_services_complete {
+    required int32 aclConnectionHandle = 1;
+}
+/* Invoked when offload app or stack notifies host stack that a error has occured on the GATT connection */
+message gatt_error_report {
+    required int32 aclConnectionHandle = 1;
+    required int32 localCid = 2;
+    required GattError error = 3;
+}
+/* API to give response to gatt offload capabilities. */
+message gatt_get_capabilities_rsp {
+    required GattCapabilities capabilities = 1;
+}

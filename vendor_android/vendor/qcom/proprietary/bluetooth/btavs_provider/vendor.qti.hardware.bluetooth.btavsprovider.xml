@@ -1,0 +1,15 @@
+<!-- 
+
+/*****************************************************************
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * All rights reserved.
+ * Confidential and Proprietary - Qualcomm Technologies, Inc.
+ ******************************************************************/
+-->
+<manifest version="1.0" type="device">
+    <hal format="aidl">
+        <name>vendor.qti.hardware.bluetooth.btavsprovider</name>
+        <version>1</version>
+        <fqname>IBtAVsProvider/default</fqname>
+    </hal>
+</manifest>

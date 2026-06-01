@@ -1,0 +1,38 @@
+cc_library_shared {
+    name: "vendor.qti.hardware.bluetooth.btavsprovider-impl-qti",
+    relative_install_path: "hw",
+    vendor: true,
+    srcs: [
+       "BtAVsProviderService.cpp",
+    ],
+    shared_libs: [
+       "libbase",
+       "liblog",
+       "libhardware",
+       "libutils",
+       "libcutils",
+       "libbinder_ndk",
+       "vendor.qti.hardware.bluetooth.btavsprovider-V1-ndk",
+    ],
+    vintf_fragments: ["vendor.qti.hardware.bluetooth.btavsprovider.xml"],
+}
+
+cc_fuzz {
+   name: "vendor.qti.hardware.bluetooth.btavsprovider-aidl_fuzzer",
+   srcs: [
+      "BtAVsProviderService.cpp",
+      "fuzzer.cpp",
+   ],
+   static_libs: [
+      "libbinder_random_parcel",
+   ],
+   shared_libs: [
+      "libbase",
+      "liblog",
+      "libhardware",
+      "libutils",
+      "libcutils",
+      "libbinder_ndk",
+      "vendor.qti.hardware.bluetooth.btavsprovider-V1-ndk",
+   ],
+}

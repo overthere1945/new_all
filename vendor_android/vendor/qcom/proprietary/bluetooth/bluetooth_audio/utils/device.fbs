@@ -1,0 +1,26 @@
+/*****************************************************************
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * All rights reserved.
+ * Confidential and Proprietary - Qualcomm Technologies, Inc.
+ ******************************************************************/
+
+namespace cache;
+
+table Device {
+    mode: int;
+    delay: float;
+    Addr: uint64;
+    isActive: bool;
+    isSupported: bool;
+    isConfigured: bool;
+    isReady: bool;
+    remoteQllFeatures: [uint8];
+}
+
+table DeviceList {
+    devices: [Device];
+    localQllFeatures: [uint8];
+    socAddOnFeatures: [uint8];
+}
+
+root_type DeviceList;

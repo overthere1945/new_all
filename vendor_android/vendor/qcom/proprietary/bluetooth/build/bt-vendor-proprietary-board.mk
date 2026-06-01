@@ -1,0 +1,216 @@
+#BT
+BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH_QCOM := true
+TARGET_USE_QTI_BT_CONFIGSTORE := true
+TARGET_USE_QTI_BT_SAR := true
+TARGET_USE_QTI_VND_FWK_DETECT := true
+TARGET_USES_QTI_BTFTM := true
+TARGET_USE_HCI_MANIFEST_FRAGMENT = false
+TARGET_USE_QTI_BT_TPI = true
+BOARD_HAVE_QCOM_FM := false
+
+#FM
+ifneq ($(TARGET_BOARD_TYPE), auto)
+ifneq ($(TARGET_BOARD_PLATFORM),vienna)
+BOARD_HAVE_QCOM_FM := true
+endif
+endif
+
+ifeq ($(TARGET_USES_QMAA), true)
+ifneq ($(TARGET_USES_QMAA_OVERRIDE_BLUETOOTH), true)
+ifneq ($(TARGET_BOARD_PLATFORM),vienna)
+BOARD_HAVE_BLUETOOTH_QCOM := false
+DISABLE_BT_FTM := true
+TARGET_USES_QTI_BTFTM := false
+BOARD_ANT_WIRELESS_DEVICE :=
+endif
+endif
+ifneq ($(TARGET_USES_QMAA_OVERRIDE_FM), true)
+BOARD_HAVE_QCOM_FM := false
+endif
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), sdm845) # SDM845 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msmnile) # msmnile specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+TARGET_HAS_DUN_HIDL_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), sm6150)  # Talos/sm6150 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), sdm710)  # sdm710/Warlock specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), sdm660)  # sdm660 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), kona)  # kona/sm8250 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+TARGET_HAS_DUN_HIDL_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "richwave"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), trinket) # trinket specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), lito) # lito specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), bengal) # bengal specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+ifeq ($(TARGET_BOARD_SUFFIX), _32)
+BOARD_HAVE_QTI_BT_LAZY_SERVICE := true
+endif
+ifeq ($(TARGET_BOARD_SUFFIX), _32go)
+BOARD_HAVE_QTI_BT_LAZY_SERVICE := true
+endif
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), atoll) # atoll specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), lahaina) # lahaina specific defines
+BOARD_HAS_QCA_FM_SOC := "richwave"
+TARGET_HAS_BT_QCV_FOR_SPF := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), taro) # waipio specific defines
+BOARD_HAS_QCA_FM_SOC := "richwave"
+TARGET_HAS_BT_QCV_FOR_SPF := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), kalama) # kailua specific defines
+BOARD_HAS_QCA_FM_SOC := "richwave"
+TARGET_HAS_BT_QCV_FOR_SPF := true
+BOARD_HAVE_QTI_BT_SERVICE_VER_1_1 := true
+TARGET_HAS_QSH_BLE_FEATURE := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), pineapple) # lanai specific defines
+BOARD_HAS_QCA_FM_SOC := "richwave"
+TARGET_HAS_BT_QCV_FOR_SPF := true
+BOARD_HAVE_QTI_BT_SERVICE_VER_1_1 := true
+TARGET_HAS_QSH_BLE_FEATURE := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), sun) # pakala specific defines
+BOARD_HAS_QCA_FM_SOC := "richwave"
+TARGET_USE_QTI_BT_CONFIGSTORE := false
+TARGET_HAS_BT_QCV_FOR_SPF := true
+BOARD_HAVE_QTI_BT_SERVICE_VER_1_1 := false
+TARGET_USE_QTI_BT_SAR_AIDL := true
+TARGET_USE_QTI_BT_SAR := false
+TARGET_USE_QTI_BT_LMP_EVENT := true
+BOARD_HAVE_QTI_BT_AIDL_SERVICE := true
+TARGET_USE_HCI_MANIFEST_FRAGMENT = true
+BOARD_HAVE_QTI_FM_AIDL_SERVICE := true
+TARGET_HAS_QSH_BLE_FEATURE := true
+BOARD_HAS_QTI_BT_XPAN := true
+BOARD_HAS_QTI_BT_CP := true
+BOARD_HAS_QTI_BT_GANGES := true
+BOARD_HAS_QTI_BT_FMD := true
+BOARD_HAVE_STANDALONE_THREAD := false
+ENABLE_VIRTUAL_SPI_SUPPORT := false
+BOARD_HAVE_QTI_BCS := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msm8998) # MSM8998 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAS_QCA_FM_SOC := "cherokee"
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msm8996) # MSM8996 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := false
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msm8937) # msm8937 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := false
+ifeq ($(TARGET_BOARD_SUFFIX), _32go)
+BOARD_HAVE_QTI_BT_LAZY_SERVICE := true
+TARGET_USE_QTI_BT_SAR := false
+endif
+ifeq ($(TARGET_BOARD_SUFFIX), _lily)
+BOARD_HAVE_QTI_BT_LAZY_SERVICE := true
+TARGET_USE_QTI_BT_SAR := false
+endif
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msm8953) # MSM8953 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := false
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msm8909) # MSM8909 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := false
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), msm8952) # MSM8952 specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := false
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), holi) # holi specific defines
+TARGET_HAS_BT_QCV_FOR_SPF := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), parrot) # netrani specific defines
+TARGET_USE_QTI_BT_CONFIGSTORE := false
+TARGET_HAS_BT_QCV_FOR_SPF := true
+BOARD_HAVE_QTI_BT_SERVICE_VER_1_1 := false
+TARGET_USE_QTI_BT_SAR_AIDL := true
+TARGET_USE_QTI_BT_SAR := false
+TARGET_USE_QTI_BT_LMP_EVENT := false
+BOARD_HAVE_QTI_BT_AIDL_SERVICE := true
+TARGET_USE_HCI_MANIFEST_FRAGMENT = true
+BOARD_HAVE_QTI_FM_AIDL_SERVICE := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM), crow) # Camano specific defines
+BOARD_HAS_QCA_FM_SOC := "richwave"
+TARGET_HAS_BT_QCV_FOR_SPF := true
+BOARD_HAVE_QTI_BT_SERVICE_VER_1_1 := true
+TARGET_HAS_QSH_BLE_FEATURE := true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),vienna) # vienna specific defines
+TARGET_HAS_SPLIT_A2DP_FEATURE := true
+BOARD_HAVE_QTI_BT_LAZY_SERVICE := false
+BOARD_HAS_QTI_BT_THEMISTO := true
+TARGET_USE_QTI_BT_SAR_AIDL := true
+TARGET_USE_QTI_BT_SAR := false
+TARGET_USE_QTI_BT_LMP_EVENT := true
+BOARD_HAVE_QTI_BT_AIDL_SERVICE := true
+TARGET_USE_HCI_MANIFEST_FRAGMENT = true
+TARGET_IS_SPI_ENABLED := true
+BOARD_HAVE_QTI_BT_SERVICE_VER_1_1 := false
+TARGET_USE_HCI_MANIFEST_FRAGMENT = true
+TARGET_USES_QTI_BTFTM := true
+BOARD_HAS_PASSTHROUGH_ENABLED := true
+BOARD_HAS_GOOGLE_OFFLOAD_ENABLED := true
+BOARD_HAS_GATT_OFFLOAD_ENABLED := false
+ifeq ($(TARGET_SUPPORTS_WEAR_ANDROID),true)
+BOARD_HAS_GATT_OFFLOAD_ENABLED := true
+endif
+BOARD_HAS_QTI_BT_FMD := true
+BOARD_HAVE_QTI_SMC_HAL_V2 := true
+BOARD_HAVE_QTI_BCS := true
+BOARD_HAVE_QTI_SOFTSKU := true
+BOARD_HAVE_QTI_BCS_V2 := true
+endif

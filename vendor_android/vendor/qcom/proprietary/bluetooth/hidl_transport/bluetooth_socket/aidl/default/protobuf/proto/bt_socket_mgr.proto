@@ -1,0 +1,119 @@
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * All rights reserved.
+ * Confidential and Proprietary - Qualcomm Technologies, Inc.
+ */
+// This defines protocol between AthertonQ6 and Bt SocketHAL
+// Atherton calls into this via Glink
+
+syntax = "proto2";
+
+package google.offload.proto;
+
+enum Status{
+    OFFLOAD_STATUS_SUCCESS = 0;
+    OFFLOAD_STATUS_FAILURE = 1;
+};
+
+
+message EndpointId{
+    required uint64 hubID = 1; //0 for Q6-LPASS
+	required uint64 endpointID = 2; // Hardcoded, 0-server, 1-client , for all profiles rfcomm/lecoc
+}
+message LECOCChannelInfo{
+	required uint32 localCid = 1;
+	required uint32 remoteCid = 2;
+	required uint32 psm = 3;
+	required uint32 localmtu = 4;
+	required uint32 remotemtu = 5;
+	required uint32 localmps = 6;
+	required uint32 remotemps = 7;
+	required uint32 initialRxCredits = 8;
+	required uint32 initialTxCredits = 9;
+}
+
+message RFCOMMChannelInfo{
+	required uint32 localCid = 1;
+	required uint32 remoteCid = 2;
+	required uint32 localmtu = 3;//150
+	required uint32 remotemtu = 4;//150
+	required uint32 initialRxCredits = 5; // ZERO
+	required uint32 initialTxCredits = 6;
+	required uint32 dlci = 7;
+	required uint32 maxFrameSize = 8;//100
+	required bool muxInitiatorFlag = 9;//?
+}
+
+message ChannelInfo{
+	optional RFCOMMChannelInfo rfcomm_channel_info = 1;
+	optional LECOCChannelInfo lecoc_channel_info = 2;
+}
+/** Type of Socket ,BT profile used*/
+enum Protocol {
+	LE_COC = 0;
+	RFCOMM = 1;
+}
+message SocketContext{
+    required uint64 socket_id = 1; // will be random number, but unique from Android
+	required bytes socket_name = 2; //ignore for now in code on LPASS
+	required uint32 aclConnectionHandle = 3;
+	required Protocol type = 4;
+	required ChannelInfo channel_info = 5;
+	required EndpointId offloadEndpointId = 6; 
+}
+/**
+* API to notify the offload stack that the socket is opened.
+*
+* @param context Socket context including socket id, channel, hub, and endpoint * info
+*/
+message socket_open{
+    required SocketContext ctx = 1; 
+}	
+
+/**
+* API to notify the offload stack that the socket is closed.
+*
+* @param socketId Identifier assigned to the socket by the host stack
+*/
+message socket_close{
+    required uint64 sock_id = 1;
+}
+
+message socket_close_ind{
+    required uint64 sock_id = 1;
+	required int32 reason= 2;
+}
+/**
+* Invoked when IBluetoothSocket.opened() is successful.
+*
+* @param socketId Identifier assigned to the socket by the host stack
+*/
+message socket_open_rsp{
+    required uint64 sock_id = 1;
+    required Status status = 2;
+    required string reason = 3;
+}	
+
+/**
+* Invoked when offload app or stack request host stack to close the socket, or
+* when IBluetoothSocket.opened() fails.
+*/
+message socket_close_rsp{
+    required uint64 sock_id = 1;
+	required string reason= 2;
+}
+
+message LeCocCapabilities {
+	required uint32 numOfSocketSupported = 1;
+	required uint32 mtu = 2;
+}
+
+message RfCommCapabilities {
+	required uint32 numOfSocketSupported = 1;
+	required uint32 maxFrameSize = 2;
+}
+
+message SocketCapabilities {
+	required LeCocCapabilities lecoc_capabilities = 1;
+	required RfCommCapabilities rfcomm_capabilities = 2;
+}

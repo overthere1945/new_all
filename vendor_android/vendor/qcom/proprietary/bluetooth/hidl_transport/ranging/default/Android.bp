@@ -1,0 +1,37 @@
+cc_prebuilt_library_static {
+    name: "lib_softsku",
+    arch: {
+        arm: {
+            srcs: ["lib32/lib_softsku.cfi.a"],
+        },
+        arm64: {
+            srcs: ["lib64/lib_softsku.cfi.a"],
+        },
+    },
+
+    vendor: true,
+    relative_install_path: "hw",
+}
+
+cc_prebuilt_library_shared {
+    name: "qc_bcs_lib",
+    arch: {
+        arm: {
+            srcs: ["lib32/qc_bcs_lib.so"],
+        },
+        arm64: {
+            srcs: ["lib64/qc_bcs_lib.so"],
+        },
+    },
+
+    shared_libs: [
+        "libcutils",
+        "liblog",
+        "libc++",
+        "libminksocket_vendor",
+        "libqcbor",
+    ],
+    static_libs: ["lib_softsku"],
+    vendor: true,
+    relative_install_path: "hw",
+}

@@ -1,0 +1,144 @@
+cc_library_shared {
+    name: "btaudio_offload_if",
+    vendor: true,
+    proprietary: true,
+    srcs: [
+        "btaudio_offload.cpp",
+    ],
+    header_libs: ["libhardware_headers"],
+    include_dirs: [
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/2.0/default/session/hw/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/2.1/default/session/hw/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/aidl/1.0/default/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/utils/",
+        "vendor/qcom/proprietary/bluetooth/btavs_provider/",
+    ],
+    defaults: [
+        "latest_android_hardware_bluetooth_audio_ndk_shared",
+    ],
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "libfmq",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libbinder_ndk",
+        "libbluetooth_audio_session_aidl_qti",
+        "libbluetooth_audio_session_qti",
+        "libbluetooth_audio_session_qti_2_1",
+        "vendor.qti.hardware.bluetooth.audio-V1-ndk",
+        "android.hardware.bluetooth.audio-impl-qti",
+        "vendor.qti.hardware.bluetooth.btavsprovider-V1-ndk",
+        "vendor.qti.hardware.bluetooth.btavsprovider-impl-qti",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wno-unused-parameter",
+    ],
+}
+
+cc_library_shared {
+    name: "libbthost_if_sink",
+    vendor: true,
+    proprietary: true,
+    srcs: [
+        "btaudio_sink_offload.cpp",
+    ],
+    header_libs: ["libhardware_headers"],
+    defaults: [
+        "latest_android_hardware_bluetooth_audio_ndk_shared",
+    ],
+    include_dirs: [
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/2.0/default/session/hw/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/2.1/default/session/hw/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/aidl/1.0/default/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/utils/",
+        "vendor/qcom/proprietary/bluetooth/btavs_provider/",
+    ],
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "libfmq",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libbinder_ndk",
+        "libbluetooth_audio_session_aidl_qti",
+        "libbluetooth_audio_session_qti",
+        "libbluetooth_audio_session_qti_2_1",
+        "vendor.qti.hardware.bluetooth.audio-V1-ndk",
+        "android.hardware.bluetooth.audio-impl-qti",
+        "vendor.qti.hardware.bluetooth.btavsprovider-V1-ndk",
+        "vendor.qti.hardware.bluetooth.btavsprovider-impl-qti",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wno-unused-parameter",
+    ],
+}
+
+cc_fuzz {
+	name: "btaudio_audio.aidl_fuzzer",
+	proprietary: true,
+	static_libs: [
+	        "libbinder_random_parcel",
+	],
+    defaults: [
+        "latest_android_hardware_bluetooth_audio_ndk_shared",
+    ],
+    shared_libs: [
+        "libcutils",
+        "liblog",
+        "qtiril-utils",
+        "libbinder_ndk",
+        "libbase",
+        "libfmq",
+        "libbinder",
+        "libbluetooth_audio_session_aidl_qti",
+        "libbluetooth_audio_session_qti",
+        "libbluetooth_audio_session_qti_2_1",
+        "vendor.qti.hardware.bluetooth.audio-V1-ndk",
+        "android.hardware.bluetooth.audio-impl-qti",
+        "vendor.qti.hardware.bluetooth.btavsprovider-V1-ndk",
+        "vendor.qti.hardware.bluetooth.btavsprovider-impl-qti",
+    ],
+
+       
+	cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wno-unused-parameter",
+    ],
+	target: {
+		android: {
+			shared_libs: [
+				"libbinder_ndk",
+				"libbinder",
+				"libutils",
+				
+			],
+		},
+		darwin: {
+			enabled: false,
+		},
+	},
+       include_dirs: [
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/2.0/default/session/hw/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/2.1/default/session/hw/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/aidl/1.0/default/",
+        "vendor/qcom/proprietary/bluetooth/bluetooth_audio/utils/",
+    ],
+
+        srcs: [
+		"fuzzer.cpp",
+                "btaudio_offload.cpp",
+        ],
+
+      header_libs: ["libhardware_headers"],
+
+
+
+}

@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * All rights reserved.
+ * Confidential and Proprietary - Qualcomm Technologies, Inc.
+ */
+
+/*Maintaining MSG-IDs B/w Offload Manager/Q6 and AP*/
+
+#define BT_OFFLOAD_SOCKET_OPEN        0x0F03
+#define BT_OFFLOAD_SOCKET_CLOSE       0x0F04
+#define BT_OFFLOAD_SOCKET_CLOSE_IND   0x0F05
+#define BT_OFFLOAD_SOCKET_CAPS        0x0F06
+
+  
+#define BT_OFFLOAD_SOCKET_OPEN_CB     BT_OFFLOAD_SOCKET_OPEN
+#define BT_OFFLOAD_SOCKET_CLOSE_CB    BT_OFFLOAD_SOCKET_CLOSE
+#define BT_OFFLOAD_SOCKET_CAPS_CB     BT_OFFLOAD_SOCKET_CAPS
+
+
+/*Maintaining MSG-IDs B/w Offload Manager/Q6 and M55/Slate*/
+
+#define BT_OFFLOAD_FIND_ENDPOINT 	0xF0
+#define BT_OFFLOAD_ENABLE_ENDPOINT	0xF1
+#define BT_OFFLOAD_DISABLE_ENDPOINT	0xF2
+
+#define BT_OFFLOAD_SET_APP_DISCOVERY_CB    BT_OFFLOAD_FIND_ENDPOINT /*id+len+proto*/
+#define BT_OFFLOAD_ENABLE_ENDPOINT_CB      BT_OFFLOAD_ENABLE_ENDPOINT 
+#define BT_OFFLOAD_DISABLE_ENDPOINT_CB     BT_OFFLOAD_DISABLE_ENDPOINT
+#define BT_OFFLOAD_DISABLE_ENDPOINT_REQ_CB 0xF3
+
+/* RFCOMM MSG-IDs */
+#define BT_OFFLOAD_RFCOMM_TX_REQ_CB			0xF4
+#define BT_OFFLOAD_RFCOMM_RX				0xF5
+
+/* HUB IDs */
+#define BT_OFFLOAD_Q6_HUB_ID 	0x00
+#define BT_OFFLOAD_M55_HUB_ID 	0x01 //Slate HUB Id
+
+/* End Point IDs for M55/Slate*/
+#define BT_OFFLOAD_M55_RFCOMM_SERVER 	0xA0
+#define	BT_OFFLOAD_M55_RFCOMM_CLIENT	0xA1
+#define BT_OFFLOAD_M55_LECOC_SERVER 	0xA2
+#define	BT_OFFLOAD_M55_LECOC_CLIENT		0xA3 
+
+#define SOCKET_CAPS_TIMEOUT 1000
